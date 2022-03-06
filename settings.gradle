@@ -1,0 +1,6 @@
+rootProject.name = 'terraform-tasks'
+
+include "terraform-tasks"
+project(":terraform-tasks").projectDir = file("impl")
+include "terraform-tasks-examples"
+project(":terraform-tasks-examples").projectDir = file("examples")
