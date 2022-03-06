@@ -1,6 +1,7 @@
 package dreifa.app.terraform.tasks
 
 import dreifa.app.registry.Registry
+import dreifa.app.sks.SimpleKVStore
 import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.executionContext.SimpleExecutionContext
 import org.junit.Rule
@@ -17,8 +18,9 @@ class IntegrationTestTFInitModuleTask {
     @Test
     fun `should do something`(testInfo: TestInfo) {
         val location = TestLocations(baseDir = "..")
+        val sks = SimpleKVStore()
         println("`${testInfo.testMethod.get().name}` results at ${location.homeDirectory()}")
-        val reg = Registry().store(location)
+        val reg = Registry().store(location).store(sks)
 
         val task = TFInitModuleTask(reg)
 
