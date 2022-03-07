@@ -1,6 +1,5 @@
 package dreifa.app.terraform.tasks
 
-import dreifa.app.fileBundle.adapters.TextAdapter
 import dreifa.app.registry.Registry
 import dreifa.app.ses.*
 import dreifa.app.tasks.BaseBlockingTask
@@ -19,7 +18,7 @@ object ModuleCreatedEventFactory : EventFactory {
         )
     }
 
-    override fun eventType(): String = "com.r3.terraform.tasks.ModuleCreated"
+    override fun eventType(): String = "dreifa.app.terraform.tasks.ModuleCreated"
 }
 
 class TFCreateModuleTask(registry: Registry) : BaseBlockingTask<TerraformModule, Unit>() {
