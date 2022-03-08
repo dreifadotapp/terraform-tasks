@@ -17,33 +17,29 @@ import org.junit.jupiter.api.TestInfo
 import org.junit.rules.TestName
 import java.io.File
 
-
 class LifeCycleTest {
     @Rule
     var name = TestName()
 
     @Test
     fun `should do something`(testInfo: TestInfo) {
-        val location = TestLocations(baseDir = "..")
         val sks = SimpleKVStore()
         val es = InMemoryEventStore()
-        println("`${testInfo.testMethod.get().name}` results at ${location.homeDirectory()}")
-        val reg = Registry().store(location).store(sks).store(es)
+        val reg = Registry().store(sks).store(es)
 
         val ctx = SimpleExecutionContext().withInstanceQualifier("module1")
         val moduleId = UniqueId.alphanumeric()
 
         // 1. create a new module
-        val createRequest = TerraformModule(moduleId, "module1")
-        TFCreateModuleTask(reg).exec(ctx, createRequest)
+        val createRequest = TFCreateModuleParams(moduleId, "module1")
+        TFCreateModuleTaskImpl(registryWithNewLocation(reg)).exec(ctx, createRequest)
 
         // 2. create the file bundle with the template, and store it the KV store
-        val mainDotTf = File("src/test/resources/main.tf").readText()
         val bundleId = UniqueId.randomUUID()
         val bundle = FileBundleBuilder()
             .withId(bundleId)
             .withName("Terraform Bundle")
-            .addItem(TextBundleItem("main.tf", mainDotTf))
+            .addItem(TextBundleItem("main.tf", File("src/test/resources/localfile/main.tf").readText()))
             .build()
         sks.put(
             Key.fromUniqueId(bundleId),
@@ -53,14 +49,14 @@ class LifeCycleTest {
 
         // 3. run the 'terraform init' command
         val initRequest = TFInitModuleRequest(moduleId, bundleId)
-        val initResult = TFInitModuleTask(reg).exec(ctx, initRequest)
+        val initResult = TFInitModuleTaskImpl(registryWithNewLocation(reg)).exec(ctx, initRequest)
         println(initResult)
 
         // 4. run the 'terraform apply' command
-//        val applyRequest = TFApplyModuleRequest(moduleId, bundleId)
-//        val applyResult = TFApplyModuleTask(reg).exec(ctx, applyRequest)
-//        println(applyResult)
-
-        //task.exec(ctx,req)
+        val applyRequest = TFApplyModuleRequest(moduleId, bundleId)
+        val applyResult = TFApplyModuleTask(registryWithNewLocation(reg)).exec(ctx, applyRequest)
+        println(applyResult)
     }
+
+    private fun registryWithNewLocation(reg: Registry): Registry = reg.clone().store(TestLocations(baseDir = ".."))
 }

@@ -6,6 +6,9 @@ import dreifa.app.fileBundle.builders.ScanDirectoryBuilder
 import dreifa.app.registry.Registry
 import dreifa.app.sks.SKSValueType
 import dreifa.app.sks.SimpleKVStore
+import dreifa.app.tasks.BaseBlockingTask
+import dreifa.app.tasks.BlockingTask
+import dreifa.app.tasks.IdempotentTask
 import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.tasks.executionContext.SimpleExecutionContext
@@ -15,10 +18,12 @@ import dreifa.app.types.UniqueId
 import java.io.File
 
 data class TFInitModuleRequest(val moduleId: UniqueId, val bundleId: UniqueId)
+interface TFInitModuleTask : BlockingTask<TFInitModuleRequest, Unit>, IdempotentTask
 
-class TFInitModuleTask(registry: Registry) : BaseTerraformTask<TFInitModuleRequest, String>(registry) {
+class TFInitModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFInitModuleRequest, Unit>(registry),
+    TFInitModuleTask {
 
-    override fun exec(ctx: ExecutionContext, input: TFInitModuleRequest): String {
+    override fun exec(ctx: ExecutionContext, input: TFInitModuleRequest) {
 
         val location = location(ctx)
         val bundle = recoverBundle(location, input.bundleId)
@@ -43,31 +48,6 @@ class TFInitModuleTask(registry: Registry) : BaseTerraformTask<TFInitModuleReque
         val newValue = textAdapter.fromBundle(bundleAfterInit)
         sks.put(Key.fromUniqueId(input.bundleId), newValue, SKSValueType.Text)
 
-        return output!!.stdout.toString() + output!!.stderr.toString()
+        //return output!!.stdout.toString() + output!!.stderr.toString()
     }
-}
-
-
-fun main(args: Array<String>) {
-    val reg = Registry()
-    val sks = SimpleKVStore()
-    val location = TestLocations(baseDir = ".")
-    reg.store(sks).store(location)
-    println("Running TFInitModuleTask in ${location.homeDirectory()}")
-
-    val template = File("impl/src/test/resources/main.tf").readText()
-
-    val bundleId = UniqueId.randomUUID()
-    val moduleId = UniqueId.randomUUID()
-    val bundle = FileBundleBuilder()
-        .withId(bundleId)
-        .withName("Simple-Terraform-Demo")
-        .addItem(TextBundleItem("main.tf", template))
-        .build()
-
-    val ctx = SimpleExecutionContext()
-    TFUploadModuleTask(reg).exec(ctx, TFUploadModuleRequest(moduleId, bundle))
-    val result = TFInitModuleTask(reg).exec(ctx, TFInitModuleRequest(moduleId, bundleId))
-
-    println(result)
 }

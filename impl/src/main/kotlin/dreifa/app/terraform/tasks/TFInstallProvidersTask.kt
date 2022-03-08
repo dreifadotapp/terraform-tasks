@@ -72,7 +72,7 @@ fun main(args: Array<String>) {
 
     val ctx = SimpleExecutionContext()
     TFUploadModuleTask(reg).exec(ctx, TFUploadModuleRequest(moduleId, bundle))
-    val result = TFInitModuleTask(reg).exec(ctx, TFInitModuleRequest(moduleId, bundleId))
+    val result = TFInitModuleTaskImpl(reg).exec(ctx, TFInitModuleRequest(moduleId, bundleId))
 
     println(result)
 }

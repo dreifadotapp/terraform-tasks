@@ -81,7 +81,7 @@ resource "docker_container" "nginx" {
 
     val ctx = SimpleExecutionContext()
     TFUploadModuleTask(reg).exec(ctx, TFUploadModuleRequest(moduleId, bundle))
-    val result1 = TFInitModuleTask(reg).exec(ctx, TFInitModuleRequest(moduleId, bundleId))
+    val result1 = TFInitModuleTaskImpl(reg).exec(ctx, TFInitModuleRequest(moduleId, bundleId))
     println(result1)
 
     val location2 = TestLocations(baseDir = ".")
