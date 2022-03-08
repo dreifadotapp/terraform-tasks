@@ -42,6 +42,15 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I,
         }
     }
 
+    protected fun terraform(): String {
+        // Could do with a nicer logic here :)
+        val possibleLocations = listOf("/usr/bin/terraform", "/usr/local/bin/terraform")
+        possibleLocations.forEach {
+            if (File(it).exists()) return it
+        }
+        return "terraform"  // assume its in the path
+    }
+
     protected fun recoverBundle(
         location: String,
         bundleId: UniqueId

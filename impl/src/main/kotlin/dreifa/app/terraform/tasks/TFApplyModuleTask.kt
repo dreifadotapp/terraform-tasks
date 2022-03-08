@@ -23,7 +23,7 @@ class TFApplyModuleTask(registry: Registry) : BaseTerraformTask<TFApplyModuleReq
         val location = location(ctx)
         val bundle = recoverBundle(location, input.bundleId)
 
-        val pb = ProcessBuilder("/usr/local/bin/terraform", "apply", "-auto-approve")
+        val pb = ProcessBuilder(terraform(), "apply", "-auto-approve")
             .directory(File(File(location).absolutePath))
         val processId = UUID.randomUUID()
 

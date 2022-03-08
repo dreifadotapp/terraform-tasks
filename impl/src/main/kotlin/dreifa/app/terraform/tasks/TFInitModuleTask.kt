@@ -23,7 +23,7 @@ class TFInitModuleTask(registry: Registry) : BaseTerraformTask<TFInitModuleReque
         val location = location(ctx)
         val bundle = recoverBundle(location, input.bundleId)
 
-        val pb = ProcessBuilder("/usr/local/bin/terraform", "init")
+        val pb = ProcessBuilder(terraform(), "init")
             .directory(File(File(location).absolutePath))
         val processId = UUID.randomUUID()
 
