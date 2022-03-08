@@ -22,7 +22,6 @@ class TFUploadModuleTask(registry: Registry) : BaseBlockingTask<TFUploadModuleRe
     private val sks = registry.get(SKS::class.java)
     private val bundleAdapter = TextAdapter()
     override fun exec(ctx: ExecutionContext, input: TFUploadModuleRequest) {
-
         val text = bundleAdapter.fromBundle(input.bundle)
         val kv = SKSKeyValue(
             Key.fromUniqueId(input.bundle.id),
