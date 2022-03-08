@@ -6,6 +6,12 @@
 A set of [tasks](https://github.com/dreifadotapp/tasks#readme) dedicated to running
 the [Terraform CLI](https://www.terraform.io/)
 
+## Quick Start
+
+See the example in [LifeCycleTest](impl/src/test/kotlin/dreifa/app/terraform/tasks/LifeCycleTest.kt)
+
+_TODO - write some better docs and example_
+
 ## Useful links
 
 * [download](https://www.terraform.io/downloads) the Terraform CLI.
@@ -14,11 +20,10 @@ the [Terraform CLI](https://www.terraform.io/)
 ## Building with CircleCI
 
 This project needs a custom image with Terraform installed. This is in the `.circleci/images/primary` folder. There is a
-public image
+public image published using the details below.
 
 ```bash
-docker build -t ianmorgan/cci-terraform-tasks-primary:0.0.1 .circleci/images/primary
+docker build -t ianmorgan/cci-terraform-tasks-primary:0.0.2 .circleci/images/primary
 docker login
-docker push ianmorgan/cci-terraform-tasks-primary:0.0.1
-
+docker push ianmorgan/cci-terraform-tasks-primary:0.0.2
 ```
