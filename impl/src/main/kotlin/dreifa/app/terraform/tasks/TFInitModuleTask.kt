@@ -1,17 +1,11 @@
 package dreifa.app.terraform.tasks
 
 import dreifa.app.fileBundle.TextBundleItem
-import dreifa.app.fileBundle.adapters.FilesAdapter
-import dreifa.app.fileBundle.adapters.TextAdapter
 import dreifa.app.fileBundle.builders.FileBundleBuilder
 import dreifa.app.fileBundle.builders.ScanDirectoryBuilder
 import dreifa.app.registry.Registry
-import dreifa.app.sks.SKS
-import dreifa.app.sks.SKSKeyValue
 import dreifa.app.sks.SKSValueType
 import dreifa.app.sks.SimpleKVStore
-import dreifa.app.tasks.BaseBlockingTask
-import dreifa.app.tasks.Locations
 import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.tasks.executionContext.SimpleExecutionContext
@@ -19,7 +13,6 @@ import dreifa.app.types.Key
 import java.util.*
 import dreifa.app.types.UniqueId
 import java.io.File
-import java.lang.RuntimeException
 
 data class TFInitModuleRequest(val moduleId: UniqueId, val bundleId: UniqueId)
 
@@ -27,12 +20,8 @@ class TFInitModuleTask(registry: Registry) : BaseTerraformTask<TFInitModuleReque
 
     override fun exec(ctx: ExecutionContext, input: TFInitModuleRequest): String {
 
-        val location = location()
-
-        val fileAdapter = FilesAdapter(location)
-        val stored = sks.get(Key.fromUniqueId(input.bundleId))
-        val bundle = textAdapter.toBundle(stored.toText())
-        fileAdapter.fromBundle(bundle)
+        val location = location(ctx)
+        val bundle = recoverBundle(location, input.bundleId)
 
         val pb = ProcessBuilder("/usr/local/bin/terraform", "init")
             .directory(File(File(location).absolutePath))

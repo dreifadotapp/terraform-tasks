@@ -37,6 +37,10 @@ allprojects {
     }
 }
 
+clean.doFirst {
+    delete "${rootDir}/.testing"
+}
+
 subprojects {
     apply plugin: 'kotlin'
     apply plugin: 'maven'

@@ -3,6 +3,7 @@ package dreifa.app.terraform.tasks
 import dreifa.app.fileBundle.TextBundleItem
 import dreifa.app.fileBundle.adapters.FilesAdapter
 import dreifa.app.fileBundle.builders.FileBundleBuilder
+import dreifa.app.fileBundle.builders.ScanDirectoryBuilder
 import dreifa.app.registry.Registry
 import dreifa.app.sks.SimpleKVStore
 import dreifa.app.tasks.TestLocations
@@ -19,36 +20,17 @@ class TFApplyModuleTask(registry: Registry) : BaseTerraformTask<TFApplyModuleReq
 
     override fun exec(ctx: ExecutionContext, input: TFApplyModuleRequest): String {
 
-        val location = location()
-        println(location)
-
-        val fileAdapter = FilesAdapter(location)
-        val stored = sks.get(Key.fromUniqueId(input.bundleId))
-        val bundle = textAdapter.toBundle(stored.toText())
-        fileAdapter.fromBundle(bundle)
+        val location = location(ctx)
+        val bundle = recoverBundle(location, input.bundleId)
 
         val pb = ProcessBuilder("/usr/local/bin/terraform", "apply", "-auto-approve")
             .directory(File(File(location).absolutePath))
         val processId = UUID.randomUUID()
 
-        ctx.processManager().registerProcess(pb, processId, "terraform-apply")
-
-        Thread.sleep(60000)
-        val output = ctx.processManager().lookupOutput(processId)
-
-        //ctx.processManager()
-        //ctx.log(LogMessage.info("called HelloWorldTask with $input"))
-        //println(output!!.stdout)
-
-//        // create a new bundle with all the terraform files
-//        val bundleAfterInit = ScanDirectoryBuilder()
-//            .withId(bundle.id)
-//            .withName(bundle.name)
-//            .withBaseDirectory(location)
-//            .build()
-//
-//        val newValue = textAdapter.fromBundle(bundleAfterInit)
-//        sks.put(Key.fromUniqueId(input.bundleId),newValue,SKSValueType.Text)
+        val pm = ctx.processManager()
+        pm.registerProcess(pb, processId, "terraform-apply")
+        waitForProcess(ctx, processId)
+        val output = pm.lookupOutput(processId)
 
         return output!!.stdout.toString()
         //return ""

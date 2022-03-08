@@ -1,16 +1,18 @@
 package dreifa.app.terraform.tasks
 
+import dreifa.app.fileBundle.FileBundle
+import dreifa.app.fileBundle.adapters.FilesAdapter
 import dreifa.app.fileBundle.adapters.TextAdapter
 import dreifa.app.registry.Registry
 import dreifa.app.sks.SKS
 import dreifa.app.tasks.BaseBlockingTask
 import dreifa.app.tasks.Locations
 import dreifa.app.tasks.executionContext.ExecutionContext
+import dreifa.app.types.Key
+import dreifa.app.types.UniqueId
 import java.io.File
 import java.lang.RuntimeException
 import java.util.*
-
-
 
 
 abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I, O>() {
@@ -18,8 +20,8 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I,
     protected val sks = registry.get(SKS::class.java)
     protected val textAdapter = TextAdapter()
 
-    protected fun location(): String {
-        return File(locations.serviceHomeDirectory("terraform", "test")).absolutePath
+    protected fun location(ctx: ExecutionContext): String {
+        return File(locations.serviceHomeDirectory(ctx, "terraform")).absolutePath
     }
 
     protected fun waitForProcess(
@@ -36,9 +38,19 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I,
         val proccessInfo = pm.findById(processId)!!
         if (proccessInfo.process.isAlive) {
             val output = pm.lookupOutput(processId)!!
-            println(output.stdout)
-            println(output.stderr)
             throw RuntimeException("timed-out waiting for ${proccessInfo.label}")
         }
     }
+
+    protected fun recoverBundle(
+        location: String,
+        bundleId: UniqueId
+    ): FileBundle {
+        val fileAdapter = FilesAdapter(location)
+        val stored = sks.get(Key.fromUniqueId(bundleId))
+        val bundle = textAdapter.toBundle(stored.toText())
+        fileAdapter.fromBundle(bundle)
+        return bundle
+    }
+
 }
