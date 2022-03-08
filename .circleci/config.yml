@@ -11,7 +11,7 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
       # Needs a custom image - see README.md
-      - image: ianmorgan/cci-terraform-tasks-primary:0.0.1
+      - image: ianmorgan/cci-terraform-tasks-primary:0.0.2
 
     working_directory: ~/repo
 
