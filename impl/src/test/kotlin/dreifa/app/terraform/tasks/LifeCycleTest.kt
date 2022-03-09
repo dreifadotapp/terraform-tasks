@@ -26,15 +26,19 @@ class LifeCycleTest : BaseTestCase() {
         val ctx = SimpleExecutionContext().withInstanceQualifier("module1")
         val moduleId = UniqueId.alphanumeric()
 
-        // 1. create a new module
-        val createRequest = TFRegisterModuleParams(moduleId, "module1")
-        TFRegisterModuleTaskImpl(registryWithNewLocation(reg)).exec(ctx, createRequest)
+        isolatedRun(reg) { reg, _ ->
+            // 1. create a new module
+            val createRequest = TFRegisterModuleParams(moduleId, "module1")
+            TFRegisterModuleTaskImpl(registryWithNewLocation(reg)).exec(ctx, createRequest)
+        }
 
-        // 2. create the file bundle with the template, and store it the KV store
         val bundleId = UniqueId.randomUUID()
-        val bundle = Fixtures.templateBundle(bundleId)
-        val uploadRequest = TFUploadTemplatesRequest(moduleId, bundle)
-        TFUploadTemplatesTaskImpl(reg).exec(ctx, uploadRequest)
+        isolatedRun(reg) { reg, _ ->
+            // 2. create the file bundle with the template, and store it the KV store
+            val bundle = Fixtures.templateBundle(bundleId)
+            val uploadRequest = TFUploadTemplatesRequest(moduleId, bundle)
+            TFUploadTemplatesTaskImpl(reg).exec(ctx, uploadRequest)
+        }
 
         isolatedRun(reg) { reg, _ ->
             // 3. run the 'terraform init' command
@@ -44,8 +48,27 @@ class LifeCycleTest : BaseTestCase() {
 
         isolatedRun(reg) { reg, location ->
             // 3. run the 'terraform apply' command
-            val applyRequest = TFApplyModuleRequest(moduleId, bundleId)
-            TFApplyModuleTask(reg).exec(ctx, applyRequest)
+            val applyRequest = TFApplyModuleRequest(
+                moduleId,
+                bundleId,
+                mapOf("content" to "Hello World!")
+            )
+
+            TFApplyModuleTaskImpl(reg).exec(ctx, applyRequest)
+
+            val foobar = File("${location.serviceHomeDirectory(ctx, "terraform")}/foo.bar")
+            assert(foobar.exists()) { "expected to find `foo.bar` file" }
+            assertThat(foobar.readText(), equalTo("Hello World!"))
+        }
+
+        isolatedRun(reg) { reg, location ->
+            // 3a. reapply with default variables
+            val applyRequest = TFApplyModuleRequest(
+                moduleId,
+                bundleId
+            )
+
+            TFApplyModuleTaskImpl(reg).exec(ctx, applyRequest)
 
             val foobar = File("${location.serviceHomeDirectory(ctx, "terraform")}/foo.bar")
             assert(foobar.exists()) { "expected to find `foo.bar` file" }

@@ -1,12 +1,9 @@
 package dreifa.app.terraform.tasks
 
-import dreifa.app.fileBundle.builders.ScanDirectoryBuilder
 import dreifa.app.registry.Registry
-import dreifa.app.sks.SKSValueType
 import dreifa.app.tasks.BlockingTask
 import dreifa.app.tasks.IdempotentTask
 import dreifa.app.tasks.executionContext.ExecutionContext
-import dreifa.app.types.Key
 import java.util.*
 import dreifa.app.types.UniqueId
 import java.io.File
@@ -28,20 +25,9 @@ class TFInitModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFInitModuleR
 
         val pm = ctx.processManager()
         pm.registerProcess(pb, processId, "terraform-init")
-
         waitForProcess(ctx, processId)
-        val output = pm.lookupOutput(processId)
 
-        // create a new bundle with all the terraform files
-        val bundleAfterInit = ScanDirectoryBuilder()
-            .withId(bundle.id)
-            .withName(bundle.name)
-            .withBaseDirectory(location)
-            .build()
-
-        val newValue = textAdapter.fromBundle(bundleAfterInit)
-        sks.put(Key.fromUniqueId(input.bundleId), newValue, SKSValueType.Text)
-
-        //return output!!.stdout.toString() + output!!.stderr.toString()
+        storeUpdatedBundle(bundle, location)
     }
+
 }

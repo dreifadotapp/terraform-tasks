@@ -3,8 +3,10 @@ package dreifa.app.terraform.tasks
 import dreifa.app.fileBundle.FileBundle
 import dreifa.app.fileBundle.adapters.FilesAdapter
 import dreifa.app.fileBundle.adapters.TextAdapter
+import dreifa.app.fileBundle.builders.ScanDirectoryBuilder
 import dreifa.app.registry.Registry
 import dreifa.app.sks.SKS
+import dreifa.app.sks.SKSValueType
 import dreifa.app.tasks.BaseBlockingTask
 import dreifa.app.tasks.Locations
 import dreifa.app.tasks.executionContext.ExecutionContext
@@ -51,6 +53,9 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I,
         return "terraform"  // assume its in the path
     }
 
+    /**
+     * Recovers all state from the KV store
+     */
     protected fun recoverBundle(
         location: String,
         bundleId: UniqueId
@@ -60,6 +65,25 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I,
         val bundle = textAdapter.toBundle(stored.toText())
         fileAdapter.fromBundle(bundle)
         return bundle
+    }
+
+    /**
+     * Relaods bundle content from the local file system, and stores in the
+     * KV store
+     */
+    protected fun storeUpdatedBundle(
+        bundle: FileBundle,
+        location: String
+    ) {
+        // create a new bundle with all the terraform files
+        val bundleAfterInit = ScanDirectoryBuilder()
+            .withId(bundle.id)
+            .withName(bundle.name)
+            .withBaseDirectory(location)
+            .build()
+
+        val newValue = textAdapter.fromBundle(bundleAfterInit)
+        sks.put(Key.fromUniqueId(bundle.id), newValue, SKSValueType.Text)
     }
 
 }

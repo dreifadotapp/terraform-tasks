@@ -11,9 +11,9 @@ dependencies {
     implementation "com.github.dreifadotapp:tasks:$tasksVersion"
     implementation "com.github.dreifadotapp:simple-event-store:$sesVersion"
 
-    //implementation platform('com.google.cloud:libraries-bom:24.1.1')
-    //implementation 'com.google.cloud:google-cloud-bigquery'
-    //implementation 'com.google.cloud:google-cloud-container'
+    // Jackson for JSON and YAML
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     testImplementation("com.natpryce:hamkrest:$hamkrestVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
