@@ -33,7 +33,7 @@ class TFInitModuleTaskTest : BaseTestCase() {
         )
 
         // run the 'terraform init' command
-        val initRequest = TFInitModuleRequest(moduleId, bundleId)
+        val initRequest = TFInitModuleRequest(moduleId)
         val initResult = TFInitModuleTaskImpl(reg).exec(ctx, initRequest)
         println(initResult)
     }

@@ -42,7 +42,7 @@ class LifeCycleTest : BaseTestCase() {
 
         isolatedRun(reg) { reg, _ ->
             // 3. run the 'terraform init' command
-            val initRequest = TFInitModuleRequest(moduleId, bundleId)
+            val initRequest = TFInitModuleRequest(moduleId)
             TFInitModuleTaskImpl(registryWithNewLocation(reg)).exec(ctx, initRequest)
         }
 
@@ -50,7 +50,6 @@ class LifeCycleTest : BaseTestCase() {
             // 3. run the 'terraform apply' command
             val applyRequest = TFApplyModuleRequest(
                 moduleId,
-                bundleId,
                 mapOf("content" to "Hello World!")
             )
 
@@ -64,8 +63,7 @@ class LifeCycleTest : BaseTestCase() {
         isolatedRun(reg) { reg, location ->
             // 3a. reapply with default variables
             val applyRequest = TFApplyModuleRequest(
-                moduleId,
-                bundleId
+                moduleId
             )
 
             TFApplyModuleTaskImpl(reg).exec(ctx, applyRequest)

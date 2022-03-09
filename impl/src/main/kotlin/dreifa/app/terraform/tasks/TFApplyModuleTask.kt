@@ -13,7 +13,6 @@ import java.io.File
 
 data class TFApplyModuleRequest(
     val moduleId: UniqueId,
-    val bundleId: UniqueId,
     val variables: MapOfAny = emptyMap()
 )
 
@@ -22,13 +21,16 @@ interface TFApplyModuleTask : BlockingTask<TFApplyModuleRequest, Unit>, Idempote
 class TFApplyModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFApplyModuleRequest, Unit>(registry),
     TFApplyModuleTask {
 
+    private val query = TFQuery(registry)
+
     override fun exec(ctx: ExecutionContext, input: TFApplyModuleRequest): Unit {
         val location = location(ctx)
-        val bundle = recoverBundle(location, input.bundleId)
+        val bundleId = query.bundleId(input.moduleId)
+        val bundle = recoverBundle(location, bundleId)
 
         // See https://www.terraform.io/language/values/variables
         if (input.variables.isNotEmpty()) {
-            buildTFvars(location, input.variables)
+            buildTFVars(location, input.variables)
         } else {
             clearTFVars(location)
         }
@@ -50,7 +52,7 @@ class TFApplyModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFApplyModul
         }
     }
 
-    private fun buildTFvars(location: String, variables: Map<String, Any?>) {
+    private fun buildTFVars(location: String, variables: Map<String, Any?>) {
         val mapper = ObjectMapper()
         mapper.registerModule(KotlinModule())
         val tfVars = File("$location/terraform.tfvars.json")
