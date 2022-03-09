@@ -2,10 +2,6 @@ package dreifa.app.terraform.tasks
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import dreifa.app.registry.Registry
-import dreifa.app.ses.InMemoryEventStore
-import dreifa.app.sks.SimpleKVStore
-import dreifa.app.tasks.executionContext.SimpleExecutionContext
 import dreifa.app.types.UniqueId
 import org.junit.Rule
 import org.junit.jupiter.api.Test
@@ -19,11 +15,8 @@ class LifeCycleTest : BaseTestCase() {
 
     @Test
     fun `should run full lifecycle`(testInfo: TestInfo) {
-        val sks = SimpleKVStore()
-        val es = InMemoryEventStore()
-        val reg = Registry().store(sks).store(es)
-
-        val ctx = SimpleExecutionContext().withInstanceQualifier("module1")
+        val (reg, _, _) = buildRegistry()
+        val (ctx, _) = buildExecutionContext()
         val moduleId = UniqueId.alphanumeric()
 
         isolatedRun(reg) { reg, _ ->
