@@ -13,7 +13,7 @@ class TFApplyModuleTask(registry: Registry) : BaseTerraformTask<TFApplyModuleReq
     override fun exec(ctx: ExecutionContext, input: TFApplyModuleRequest): String {
 
         val location = location(ctx)
-        val bundle = recoverBundle(location, input.bundleId)
+        recoverBundle(location, input.bundleId)
 
         val pb = ProcessBuilder(terraform(), "apply", "-auto-approve")
             .directory(File(File(location).absolutePath))

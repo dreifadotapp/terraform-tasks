@@ -4,27 +4,19 @@ import dreifa.app.fileBundle.TextBundleItem
 import dreifa.app.fileBundle.adapters.TextAdapter
 import dreifa.app.fileBundle.builders.FileBundleBuilder
 import dreifa.app.registry.Registry
-import dreifa.app.ses.EventStore
-import dreifa.app.ses.InMemoryEventStore
-import dreifa.app.sks.SKS
 import dreifa.app.sks.SKSValueType
-import dreifa.app.sks.SimpleKVStore
-import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.executionContext.ExecutionContext
-import dreifa.app.tasks.executionContext.SimpleExecutionContext
-import dreifa.app.tasks.logging.InMemoryLogging
-import dreifa.app.tasks.logging.LoggingReaderContext
 import dreifa.app.types.Key
 import dreifa.app.types.UniqueId
 import org.junit.jupiter.api.Test
 import java.io.File
 
-class TFInitModuleTaskTest {
+class TFInitModuleTaskTest : BaseTestCase() {
 
     @Test
     fun `should init module`() {
-        val (reg, ses, sks) = buildRegistry()
-        val (ctx, logging) = buildExecutionContext()
+        val (reg, _, sks) = buildRegistry()
+        val (ctx, _) = buildExecutionContext()
         val moduleId = runPriorTasks(reg, ctx)
 
         // create the file bundle with the template, and store it the KV store
@@ -48,21 +40,9 @@ class TFInitModuleTaskTest {
 
     private fun runPriorTasks(reg: Registry, ctx: ExecutionContext): UniqueId {
         val moduleId = UniqueId.randomUUID()
-        val module = TFCreateModuleParams(moduleId = moduleId, moduleName = "test")
-        TFCreateModuleTaskImpl(reg).exec(ctx, module)
+        val module = TFRegisterModuleParams(moduleId = moduleId, moduleName = "test")
+        TFRegisterModuleTaskImpl(reg).exec(ctx, module)
         return moduleId
     }
 
-    private fun buildRegistry(): Triple<Registry, EventStore, SKS> {
-        val ses = InMemoryEventStore()
-        val sks = SimpleKVStore()
-        val reg = Registry().store(ses).store(sks).store(TestLocations(baseDir = ".."))
-        return Triple(reg, ses, sks)
-    }
-
-    private fun buildExecutionContext(): Pair<ExecutionContext, LoggingReaderContext> {
-        val logging = InMemoryLogging()
-        val ctx = SimpleExecutionContext().withInMemoryLogging(logging).withInstanceQualifier("testing")
-        return Pair(ctx, logging)
-    }
 }
