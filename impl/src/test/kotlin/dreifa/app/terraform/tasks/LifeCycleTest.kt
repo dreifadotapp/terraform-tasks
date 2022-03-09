@@ -15,31 +15,31 @@ class LifeCycleTest : BaseTestCase() {
 
     @Test
     fun `should run full lifecycle`(testInfo: TestInfo) {
-        val (reg, _, _) = buildRegistry()
+        val (baseReg, _, _) = buildRegistry()
         val (ctx, _) = buildExecutionContext()
         val moduleId = UniqueId.alphanumeric()
 
-        isolatedRun(reg) { reg, _ ->
+        isolatedRun(baseReg) { reg, _ ->
             // 1. create a new module
             val createRequest = TFRegisterModuleParams(moduleId, "module1")
             TFRegisterModuleTaskImpl(registryWithNewLocation(reg)).exec(ctx, createRequest)
         }
 
         val bundleId = UniqueId.randomUUID()
-        isolatedRun(reg) { reg, _ ->
+        isolatedRun(baseReg) { reg, _ ->
             // 2. create the file bundle with the template, and store it the KV store
             val bundle = Fixtures.templateBundle(bundleId)
             val uploadRequest = TFUploadTemplatesRequest(moduleId, bundle)
             TFUploadTemplatesTaskImpl(reg).exec(ctx, uploadRequest)
         }
 
-        isolatedRun(reg) { reg, _ ->
+        isolatedRun(baseReg) { reg, _ ->
             // 3. run the 'terraform init' command
             val initRequest = TFInitModuleRequest(moduleId)
             TFInitModuleTaskImpl(registryWithNewLocation(reg)).exec(ctx, initRequest)
         }
 
-        isolatedRun(reg) { reg, location ->
+        isolatedRun(baseReg) { reg, location ->
             // 3. run the 'terraform apply' command
             val applyRequest = TFApplyModuleRequest(
                 moduleId,
@@ -53,7 +53,7 @@ class LifeCycleTest : BaseTestCase() {
             assertThat(foobar.readText(), equalTo("Hello World!"))
         }
 
-        isolatedRun(reg) { reg, location ->
+        isolatedRun(baseReg) { reg, location ->
             // 3a. reapply with default variables
             val applyRequest = TFApplyModuleRequest(
                 moduleId

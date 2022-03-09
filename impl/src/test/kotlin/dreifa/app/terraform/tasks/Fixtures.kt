@@ -9,12 +9,11 @@ import java.io.File
 object Fixtures {
 
     fun templateBundle(bundleId: UniqueId = UniqueId.randomUUID()): FileBundle {
-        val bundle = FileBundleBuilder()
+        return FileBundleBuilder()
             .withId(bundleId)
             .withName("Terraform Bundle")
             .addItem(TextBundleItem("main.tf", File("src/test/resources/localfile/main.tf").readText()))
             .build()
-        return bundle
     }
 
 }
