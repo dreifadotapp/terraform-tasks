@@ -27,3 +27,17 @@ docker build -t ianmorgan/cci-terraform-tasks-primary:0.0.2 .circleci/images/pri
 docker login
 docker push ianmorgan/cci-terraform-tasks-primary:0.0.2
 ```
+
+## Adding as a dependency
+
+Maven jars are deployed using JitPack. See releases for version details.
+
+```groovy
+//add jitpack repo
+maven { url "https://jitpack.io" }
+
+// add dependency
+implementation "com.github.dreifadotapp:terraform-tasks:<release>"
+```
+
+JitPack build status is at https://jitpack.io/com/github/dreifadotapp/terraform-tasks/$releaseTag/build.log
