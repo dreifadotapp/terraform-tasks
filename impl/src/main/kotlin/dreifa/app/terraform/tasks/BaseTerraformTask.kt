@@ -40,6 +40,7 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I,
         val proccessInfo = pm.findById(processId)!!
         if (proccessInfo.process.isAlive) {
             val output = pm.lookupOutput(processId)!!
+            println(output)
             throw RuntimeException("timed-out waiting for ${proccessInfo.label}")
         }
     }

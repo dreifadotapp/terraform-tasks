@@ -14,7 +14,7 @@ class LifeCycleTest : BaseTestCase() {
     var name = TestName()
 
     @Test
-    fun `should run full lifecycle`(testInfo: TestInfo) {
+    fun `should run full lifecycle`() {
         val (baseReg, _, _) = buildRegistry()
         val (ctx, _) = buildExecutionContext()
         val moduleId = UniqueId.alphanumeric()

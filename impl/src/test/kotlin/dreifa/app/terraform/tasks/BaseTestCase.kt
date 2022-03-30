@@ -12,10 +12,6 @@ import dreifa.app.tasks.executionContext.SimpleExecutionContext
 import dreifa.app.tasks.logging.InMemoryLogging
 import dreifa.app.tasks.logging.LoggingReaderContext
 
-enum class IsolatedRunStrategies {
-    EchoLocation
-}
-
 open class BaseTestCase {
 
     protected fun buildRegistry(): Triple<Registry, EventStore, SKS> {
@@ -39,8 +35,6 @@ open class BaseTestCase {
      */
     protected fun isolatedRun(
         reg: Registry,
-        //name: String = "",
-        //strategies: List<IsolatedRunStrategies> = emptyList(),
         block: (reg: Registry, location: Locations) -> Unit
     ) {
         val location = TestLocations(baseDir = "..")
