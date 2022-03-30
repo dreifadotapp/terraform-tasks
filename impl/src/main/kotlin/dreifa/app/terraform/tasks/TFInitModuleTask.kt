@@ -1,18 +1,18 @@
 package dreifa.app.terraform.tasks
 
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.BlockingTask
-import dreifa.app.tasks.IdempotentTask
+import dreifa.app.tasks.*
 import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.types.UniqueId
 import java.util.*
 import java.io.File
 
-data class TFInitModuleRequest(val moduleId : UniqueId)
+data class TFInitModuleRequest(val moduleId: UniqueId)
 interface TFInitModuleTask : BlockingTask<TFInitModuleRequest, Unit>, IdempotentTask
 
 class TFInitModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFInitModuleRequest, Unit>(registry),
-    TFInitModuleTask {
+    TFInitModuleTask,
+    TaskDoc<TFInitModuleRequest, Unit> {
     private val query = TFQuery(registry)
 
     override fun exec(ctx: ExecutionContext, input: TFInitModuleRequest) {
@@ -31,6 +31,18 @@ class TFInitModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFInitModuleR
         waitForProcess(ctx, processId)
 
         storeUpdatedBundle(bundle, location)
+    }
+
+    override fun description() =
+        "The task to run the terraform init logic. Must have called TFRegisterModuleTask and TFRegisterFileBundleTask before"
+
+    override fun examples(): List<TaskExample<TFInitModuleRequest, Unit>> {
+        return TaskExamplesBuilder()
+            .example("Initialising a registered module.")
+            .input(TFInitModuleRequest(UniqueId.alphanumeric()))
+            .inputDescription("The moduleId used in TFRegisterModuleTask")
+            .done()
+            .build()
     }
 
 }

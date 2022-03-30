@@ -2,9 +2,7 @@ package dreifa.app.terraform.tasks
 
 import dreifa.app.registry.Registry
 import dreifa.app.ses.*
-import dreifa.app.tasks.BaseBlockingTask
-import dreifa.app.tasks.BlockingTask
-import dreifa.app.tasks.IdempotentTask
+import dreifa.app.tasks.*
 import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.tasks.logging.LogMessage
 import dreifa.app.types.UniqueId
@@ -28,7 +26,7 @@ object ModuleRegisteredEventFactory : EventFactory {
     override fun eventType(): String = "dreifa.app.terraform.tasks.ModuleRegistered"
 }
 
-class TFRegisterModuleTaskImpl(registry: Registry) : TFRegisterModuleTask,
+class TFRegisterModuleTaskImpl(registry: Registry) : TFRegisterModuleTask, TaskDoc<TFRegisterModuleParams, Unit>,
     BaseBlockingTask<TFRegisterModuleParams, Unit>() {
 
     private val ses = registry.get(EventStore::class.java)
@@ -45,5 +43,15 @@ class TFRegisterModuleTaskImpl(registry: Registry) : TFRegisterModuleTask,
         } else {
             ctx.log(LogMessage.warn("TerraformModule with moduleId ${input.moduleId} already exists"))
         }
+    }
+
+    override fun description(): String = "The first Task to call. This simply registers a new module"
+
+    override fun examples(): List<TaskExample<TFRegisterModuleParams, Unit>> {
+        return TaskExamplesBuilder()
+            .example("Registering a new module")
+            .input(TFRegisterModuleParams(UniqueId.alphanumeric(), "Demo Module"))
+            .done()
+            .build()
     }
 }

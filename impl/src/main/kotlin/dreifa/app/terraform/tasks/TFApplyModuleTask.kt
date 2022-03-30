@@ -3,8 +3,7 @@ package dreifa.app.terraform.tasks
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import dreifa.app.registry.Registry
-import dreifa.app.tasks.BlockingTask
-import dreifa.app.tasks.IdempotentTask
+import dreifa.app.tasks.*
 import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.types.MapOfAny
 import java.util.*
@@ -19,7 +18,8 @@ data class TFApplyModuleRequest(
 interface TFApplyModuleTask : BlockingTask<TFApplyModuleRequest, Unit>, IdempotentTask
 
 class TFApplyModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFApplyModuleRequest, Unit>(registry),
-    TFApplyModuleTask {
+    TFApplyModuleTask,
+    TaskDoc<TFApplyModuleRequest, Unit> {
 
     private val query = TFQuery(registry)
 
@@ -57,5 +57,16 @@ class TFApplyModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFApplyModul
         mapper.registerModule(KotlinModule())
         val tfVars = File("$location/terraform.tfvars.json")
         mapper.writeValue(tfVars, variables)
+    }
+
+    override fun description() = "run `terraform apply"
+
+    override fun examples(): List<TaskExample<TFApplyModuleRequest, Unit>> {
+        return TaskExamplesBuilder()
+            .example("appling the a new module")
+            .input(TFApplyModuleRequest(UniqueId.alphanumeric(), mapOf("custom" to "params")))
+            .inputDescription("Supply the moduleId and any custom parameters expected by the terraform template")
+            .done()
+            .build()
     }
 }

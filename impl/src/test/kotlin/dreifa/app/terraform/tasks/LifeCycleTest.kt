@@ -2,6 +2,8 @@ package dreifa.app.terraform.tasks
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import dreifa.app.fileBundle.adapters.TextAdapter
+import dreifa.app.tasks.inbuilt.fileBundle.FBStoreTaskImpl
 import dreifa.app.types.UniqueId
 import org.junit.Rule
 import org.junit.jupiter.api.Test
@@ -26,11 +28,18 @@ class LifeCycleTest : BaseTestCase() {
         }
 
         val bundleId = UniqueId.randomUUID()
+
         isolatedRun(baseReg) { reg, _ ->
-            // 2. create the file bundle with the template, and store it the KV store
+            // 2a. create the file bundle with the template, and store it the KV store
             val bundle = Fixtures.templateBundle(bundleId)
-            val uploadRequest = TFUploadTemplatesRequest(moduleId, bundle)
-            TFUploadTemplatesTaskImpl(reg).exec(ctx, uploadRequest)
+            val asText = TextAdapter().fromBundle(bundle)
+            FBStoreTaskImpl(reg).exec(ctx,asText)
+        }
+
+        isolatedRun(baseReg) { reg, _ ->
+            // 2b. link the FileBundle to the module
+            val uploadRequest = TFRegisterFileBundleRequest(moduleId, bundleId)
+            TFRegisterFileBundleTaskImpl(reg).exec(ctx, uploadRequest)
         }
 
         isolatedRun(baseReg) { reg, _ ->

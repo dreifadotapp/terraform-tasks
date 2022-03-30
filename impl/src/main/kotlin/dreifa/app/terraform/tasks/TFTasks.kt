@@ -9,6 +9,6 @@ class TFTasks : SimpleTaskRegistrations(
         TaskRegistration(TFRegisterModuleTaskImpl::class, TFRegisterModuleTask::class),
         TaskRegistration(TFInitModuleTaskImpl::class, TFInitModuleTask::class),
         TaskRegistration(TFApplyModuleTaskImpl::class, TFApplyModuleTask::class),
-        TaskRegistration(TFUploadTemplatesTaskImpl::class, TFUploadTemplatesTask::class),
+        TaskRegistration(TFRegisterFileBundleTaskImpl::class, TFRegisterFileBundleTask::class),
     )
 )
