@@ -59,12 +59,12 @@ class TFApplyModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFApplyModul
         mapper.writeValue(tfVars, variables)
     }
 
-    override fun description() = "run `terraform apply"
+    override fun description() = "Run terraform apply"
 
     override fun examples(): List<TaskExample<TFApplyModuleRequest, Unit>> {
         return TaskExamplesBuilder()
-            .example("appling the a new module")
-            .input(TFApplyModuleRequest(UniqueId.alphanumeric(), mapOf("custom" to "params")))
+            .example("applying a new module")
+            .input(TFApplyModuleRequest(UniqueId.alphanumeric(), emptyMap()))
             .inputDescription("Supply the moduleId and any custom parameters expected by the terraform template")
             .done()
             .build()
