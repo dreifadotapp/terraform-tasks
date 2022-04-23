@@ -30,7 +30,7 @@ object FileBundledRegisteredEventFactory : EventFactory {
     override fun eventType(): String = "dreifa.app.terraform.tasks.FileBundledRegistered"
 }
 
-class TFRegisterFileBundleTaskImpl(registry: Registry) : BaseBlockingTask<TFRegisterFileBundleRequest, Unit>(),
+class TFRegisterFileBundleTaskImpl(registry: Registry) : BlockingTask<TFRegisterFileBundleRequest, Unit>,
     TFRegisterFileBundleTask,
     TaskDoc<TFRegisterFileBundleRequest, Unit> {
     private val sks = registry.get(SKS::class.java)

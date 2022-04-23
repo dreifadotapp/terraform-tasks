@@ -7,7 +7,7 @@ import dreifa.app.fileBundle.builders.ScanDirectoryBuilder
 import dreifa.app.registry.Registry
 import dreifa.app.sks.SKS
 import dreifa.app.sks.SKSValueType
-import dreifa.app.tasks.BaseBlockingTask
+import dreifa.app.tasks.BlockingTask
 import dreifa.app.tasks.Locations
 import dreifa.app.tasks.executionContext.ExecutionContext
 import dreifa.app.types.Key
@@ -17,10 +17,10 @@ import java.lang.RuntimeException
 import java.util.*
 
 
-abstract class BaseTerraformTask<I, O>(registry: Registry) : BaseBlockingTask<I, O>() {
-    protected val locations = registry.get(Locations::class.java)
-    protected val sks = registry.get(SKS::class.java)
-    protected val textAdapter = TextAdapter()
+abstract class BaseTerraformTask<I, O>(registry: Registry) : BlockingTask<I, O> {
+    private val locations = registry.get(Locations::class.java)
+    private val sks = registry.get(SKS::class.java)
+    private val textAdapter = TextAdapter()
 
     protected fun location(ctx: ExecutionContext): String {
         return File(locations.serviceHomeDirectory(ctx, "terraform")).absolutePath

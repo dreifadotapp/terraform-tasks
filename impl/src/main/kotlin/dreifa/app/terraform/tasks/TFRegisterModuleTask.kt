@@ -27,7 +27,7 @@ object ModuleRegisteredEventFactory : EventFactory {
 }
 
 class TFRegisterModuleTaskImpl(registry: Registry) : TFRegisterModuleTask, TaskDoc<TFRegisterModuleParams, Unit>,
-    BaseBlockingTask<TFRegisterModuleParams, Unit>() {
+    BlockingTask<TFRegisterModuleParams, Unit>{
 
     private val ses = registry.get(EventStore::class.java)
     private val query = TFQuery(registry)
