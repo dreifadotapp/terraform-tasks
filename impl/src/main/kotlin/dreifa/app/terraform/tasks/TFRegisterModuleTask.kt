@@ -4,6 +4,7 @@ import dreifa.app.registry.Registry
 import dreifa.app.ses.*
 import dreifa.app.tasks.*
 import dreifa.app.tasks.executionContext.ExecutionContext
+import dreifa.app.tasks.inbuilt.providers.TPQueryTask
 import dreifa.app.tasks.logging.LogMessage
 import dreifa.app.types.UniqueId
 
@@ -12,7 +13,9 @@ import dreifa.app.types.UniqueId
  * an event in the EventStore to record that the module has been registered.
  */
 data class TFRegisterModuleParams(val moduleId: UniqueId, val moduleName: String)
-interface TFRegisterModuleTask : BlockingTask<TFRegisterModuleParams, Unit>, IdempotentTask
+interface TFRegisterModuleTask : BlockingTask<TFRegisterModuleParams, Unit>, IdempotentTask {
+    override fun taskName(): String = TPQueryTask::class.simpleName!!
+}
 
 object ModuleRegisteredEventFactory : EventFactory {
     fun create(params: TFRegisterModuleParams): Event {
@@ -27,7 +30,7 @@ object ModuleRegisteredEventFactory : EventFactory {
 }
 
 class TFRegisterModuleTaskImpl(registry: Registry) : TFRegisterModuleTask, TaskDoc<TFRegisterModuleParams, Unit>,
-    BlockingTask<TFRegisterModuleParams, Unit>{
+    BlockingTask<TFRegisterModuleParams, Unit> {
 
     private val ses = registry.get(EventStore::class.java)
     private val query = TFQuery(registry)

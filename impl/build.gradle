@@ -3,14 +3,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
-    //implementation "com.github.dreifadotapp:simple-serialisation:$sisVersion"
-    //implementation "com.github.dreifadotapp:simple-event-store:$sesVersion"
-    //implementation "com.github.dreifadotapp:simple-kv-store:$sksVersion"
-    //implementation "com.github.dreifadotapp:file-bundle:$fileBundleVersion"
-    //implementation "com.github.dreifadotapp:commons:$commonsVersion"
-    //implementation "com.github.dreifadotapp:registry:$registryVersion"
     implementation "com.github.dreifadotapp:tasks:$tasksVersion"
-    //implementation "com.github.dreifadotapp:simple-event-store:$sesVersion"
 
     // Jackson for JSON and YAML
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.*
 import dreifa.app.tasks.executionContext.ExecutionContext
+import dreifa.app.tasks.inbuilt.providers.TPQueryTask
 import dreifa.app.types.MapOfAny
 import java.util.*
 import dreifa.app.types.UniqueId
@@ -15,7 +16,9 @@ data class TFApplyModuleRequest(
     val variables: MapOfAny = emptyMap()
 )
 
-interface TFApplyModuleTask : BlockingTask<TFApplyModuleRequest, Unit>, IdempotentTask
+interface TFApplyModuleTask : BlockingTask<TFApplyModuleRequest, Unit>, IdempotentTask {
+    override fun taskName(): String = TPQueryTask::class.simpleName!!
+}
 
 class TFApplyModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFApplyModuleRequest, Unit>(registry),
     TFApplyModuleTask,

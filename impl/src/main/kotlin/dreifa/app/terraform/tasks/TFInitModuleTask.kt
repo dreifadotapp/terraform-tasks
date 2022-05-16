@@ -3,12 +3,15 @@ package dreifa.app.terraform.tasks
 import dreifa.app.registry.Registry
 import dreifa.app.tasks.*
 import dreifa.app.tasks.executionContext.ExecutionContext
+import dreifa.app.tasks.inbuilt.providers.TPQueryTask
 import dreifa.app.types.UniqueId
 import java.util.*
 import java.io.File
 
 data class TFInitModuleRequest(val moduleId: UniqueId)
-interface TFInitModuleTask : BlockingTask<TFInitModuleRequest, Unit>, IdempotentTask
+interface TFInitModuleTask : BlockingTask<TFInitModuleRequest, Unit>, IdempotentTask {
+    override fun taskName(): String = TPQueryTask::class.simpleName!!
+}
 
 class TFInitModuleTaskImpl(registry: Registry) : BaseTerraformTask<TFInitModuleRequest, Unit>(registry),
     TFInitModuleTask,

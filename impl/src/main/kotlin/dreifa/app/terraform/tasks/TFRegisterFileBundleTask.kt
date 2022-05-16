@@ -7,6 +7,7 @@ import dreifa.app.ses.EventStore
 import dreifa.app.sks.SKS
 import dreifa.app.tasks.*
 import dreifa.app.tasks.executionContext.ExecutionContext
+import dreifa.app.tasks.inbuilt.providers.TPQueryTask
 import dreifa.app.types.Key
 import dreifa.app.types.UniqueId
 import java.lang.RuntimeException
@@ -16,7 +17,9 @@ import java.lang.RuntimeException
  * hand.
  */
 data class TFRegisterFileBundleRequest(val moduleId: UniqueId, val bundleId: UniqueId)
-interface TFRegisterFileBundleTask : BlockingTask<TFRegisterFileBundleRequest, Unit>, IdempotentTask
+interface TFRegisterFileBundleTask : BlockingTask<TFRegisterFileBundleRequest, Unit>, IdempotentTask {
+    override fun taskName(): String = TPQueryTask::class.simpleName!!
+}
 
 object FileBundledRegisteredEventFactory : EventFactory {
     fun create(params: TFRegisterFileBundleRequest): Event {
