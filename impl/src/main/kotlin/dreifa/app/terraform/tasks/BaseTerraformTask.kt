@@ -16,7 +16,6 @@ import java.io.File
 import java.lang.RuntimeException
 import java.util.*
 
-
 abstract class BaseTerraformTask<I, O>(registry: Registry) : BlockingTask<I, O> {
     private val locations = registry.get(Locations::class.java)
     private val sks = registry.get(SKS::class.java)
@@ -37,11 +36,11 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BlockingTask<I, O> 
             Thread.sleep(1000)
         }
 
-        val proccessInfo = pm.findById(processId)!!
-        if (proccessInfo.process.isAlive) {
+        val processInfo = pm.findById(processId)!!
+        if (processInfo.process.isAlive) {
             val output = pm.lookupOutput(processId)!!
             println(output)
-            throw RuntimeException("timed-out waiting for ${proccessInfo.label}")
+            throw RuntimeException("timed-out waiting for ${processInfo.label}")
         }
     }
 
