@@ -68,7 +68,7 @@ abstract class BaseTerraformTask<I, O>(registry: Registry) : BlockingTask<I, O> 
     }
 
     /**
-     * Relaods bundle content from the local file system, and stores in the
+     * Reloads bundle content from the local file system, and stores in the
      * KV store
      */
     protected fun storeUpdatedBundle(

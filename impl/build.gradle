@@ -5,6 +5,7 @@ dependencies {
 
     implementation "com.github.dreifadotapp:tasks:$tasksVersion"
 
+
     // Jackson for JSON and YAML
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
