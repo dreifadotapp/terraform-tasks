@@ -1,0 +1,30 @@
+dependencies {
+    implementation project(":tasks")
+
+    implementation("com.github.jitpack:gradle-simple:1.0")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
+    implementation "com.github.dreifadotapp:tasks:$tasksVersion"
+
+    implementation platform("org.http4k:http4k-bom:$http4kVersion")
+    implementation("org.http4k:http4k-core")
+    implementation("org.http4k:http4k-server-jetty")
+
+
+    // Jackson for JSON and YAML
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+
+    testImplementation("com.natpryce:hamkrest:$hamkrestVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+    testImplementation('org.junit.platform:junit-platform-runner:1.0.0')
+
+    //
+    implementation "com.github.dreifadotapp.tasks-http4k:server:$tasksHttp4kVersion"
+
+    //implementation "com.github.dreifadotapp:tasks-http4k:0.0.1"
+
+
+}
+
