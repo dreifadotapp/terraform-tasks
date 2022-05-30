@@ -23,6 +23,9 @@ dependencies {
     //
     implementation "com.github.dreifadotapp.tasks-http4k:server:$tasksHttp4kVersion"
 
+    testImplementation "com.github.dreifadotapp.tasks-http4k:client:$tasksHttp4kVersion"
+
+
     //implementation "com.github.dreifadotapp:tasks-http4k:0.0.1"
 
 
