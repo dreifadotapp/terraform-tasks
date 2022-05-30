@@ -12,6 +12,7 @@ import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.client.SimpleTaskClient
 import dreifa.app.tasks.demo.DemoTasks
 import dreifa.app.tasks.httpServer.TaskController
+import dreifa.app.tasks.inbuilt.InBuiltTasks
 import dreifa.app.tasks.logging.CapturedOutputStream
 import dreifa.app.tasks.logging.DefaultLoggingChannelFactory
 import dreifa.app.tasks.logging.InMemoryLogging
@@ -23,10 +24,6 @@ class AgentApp(registry: Registry, config: Config) {
     private val server: Http4kServer
 
     init {
-
-        //val vhost = "http://localhost:${config.port()}"
-        //val expectedConfig = File("config.yaml") // under docker we simply expect this to mapped to the working dir
-        //val testConfig = File("src/test/resources/config.yaml")
 
         // base services
         if (!registry.contains(OpenTelemetryProvider::class.java)) {
@@ -63,6 +60,7 @@ class AgentApp(registry: Registry, config: Config) {
         val taskFactory = TaskFactory(registry)
         taskFactory.register(TFTasks())
         taskFactory.register(DemoTasks())
+        taskFactory.register(InBuiltTasks())
         registry.store(taskFactory)
 
         // wire in TaskClient

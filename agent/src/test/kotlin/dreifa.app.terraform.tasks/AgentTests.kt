@@ -9,7 +9,7 @@ import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.client.SimpleClientContext
 import dreifa.app.tasks.httpClient.HttpTaskClient
 import dreifa.app.tasks.httpClient.TheClientApp
-import dreifa.app.tasks.inbuilt.fileBundle.FBStoreTaskImpl
+import dreifa.app.tasks.inbuilt.fileBundle.FBStoreTask
 import dreifa.app.tasks.logging.InMemoryLoggingRepo
 import dreifa.app.types.UniqueId
 import org.junit.jupiter.api.AfterAll
@@ -56,12 +56,39 @@ class AgentTests {
         val client = HttpTaskClient(registry, "http://localhost:${config.port()}")
         val ctx = SimpleClientContext()
 
-
+        // 1. register a new module
         val moduleId = UniqueId.randomUUID()
         val registerModuleRequest = TFRegisterModuleParams(moduleId = moduleId, moduleName = "test")
-        val result = client.execBlocking(
+        client.execBlocking(
             ctx, TFRegisterModuleTask::class.qualifiedName!!, registerModuleRequest, Unit::class
         )
+
+        // 2. upload bundle with terraform template
+        val bundleId = UniqueId.randomUUID()
+        val bundle = Fixtures.templateBundle(bundleId)
+        val asText = TextAdapter().fromBundle(bundle)
+        client.execBlocking(
+            ctx, FBStoreTask::class.qualifiedName!!, asText, Unit::class
+        )
+
+        // 3. Register the file bundle
+        val uploadRequest = TFRegisterFileBundleRequest(moduleId, bundleId)
+        client.execBlocking(
+            ctx, TFRegisterFileBundleTask::class.qualifiedName!!, uploadRequest, Unit::class
+        )
+
+        // 4.
+        val applyRequest = TFApplyModuleRequest(
+            moduleId,
+            mapOf("content" to "Hello World!")
+        )
+//        client.execBlocking(
+//            ctx, TFApplyModuleTask::class.qualifiedName!!, applyRequest, Unit::class
+//        )
+
+        //TFApplyModuleTaskImpl(reg).exec(ctx, applyRequest)
+
+        //FBStoreTaskImpl(reg).exec(ctx, asText)
 
         //val bundle = FBStoreTaskImpl.Fixtures.templateBundle(bundleId)
         //val asText = TextAdapter().fromBundle(bundle)
