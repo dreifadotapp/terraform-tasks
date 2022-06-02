@@ -7,6 +7,7 @@ import dreifa.app.ses.EventStore
 import dreifa.app.ses.InMemoryEventStore
 import dreifa.app.sks.SimpleKVStore
 import dreifa.app.tasks.DefaultAsyncResultChannelSinkFactory
+import dreifa.app.tasks.Locations
 import dreifa.app.tasks.TaskFactory
 import dreifa.app.tasks.TestLocations
 import dreifa.app.tasks.client.SimpleTaskClient
@@ -40,13 +41,16 @@ class AgentApp(registry: Registry, config: Config) {
         val sks = SimpleKVStore()
         val logConsumerContext = InMemoryLogging()
         val captured = CapturedOutputStream(logConsumerContext)
-        val locations = TestLocations()
+        if (!registry.contains(Locations::class.java)){
+            registry.store(TestLocations())
+        }
+       // val locations = TestLocations()
 
         registry
             .store(sks)
             .store(logConsumerContext)
             .store(captured)
-            .store(locations)
+            //.store(locations)
         //.store(provider)
         //.store(tracer)
 

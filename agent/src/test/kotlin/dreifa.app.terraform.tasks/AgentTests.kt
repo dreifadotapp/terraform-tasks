@@ -16,6 +16,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AgentTests {
@@ -52,7 +53,7 @@ class AgentTests {
     }
 
     @Test
-    fun `should run terraform`() {
+    fun `should run simple terraform template`() {
         val client = HttpTaskClient(registry, "http://localhost:${config.port()}")
         val ctx = SimpleClientContext()
 
@@ -77,33 +78,24 @@ class AgentTests {
             ctx, TFRegisterFileBundleTask::class.qualifiedName!!, uploadRequest, Unit::class
         )
 
-        // 4.
+        // 4. Initialise Terraform
+        val initRequest = TFInitModuleRequest(moduleId)
+        client.execBlocking(
+            ctx, TFInitModuleTask::class.qualifiedName!!, initRequest, Unit::class
+        )
+
+        // 5. Apply Terraform
         val applyRequest = TFApplyModuleRequest(
             moduleId,
             mapOf("content" to "Hello World!")
         )
-//        client.execBlocking(
-//            ctx, TFApplyModuleTask::class.qualifiedName!!, applyRequest, Unit::class
-//        )
+        client.execBlocking(
+            ctx, TFApplyModuleTask::class.qualifiedName!!, applyRequest, Unit::class
+        )
 
-        //TFApplyModuleTaskImpl(reg).exec(ctx, applyRequest)
-
-        //FBStoreTaskImpl(reg).exec(ctx, asText)
-
-        //val bundle = FBStoreTaskImpl.Fixtures.templateBundle(bundleId)
-        //val asText = TextAdapter().fromBundle(bundle)
-        //FBStoreTaskImpl(reg).exec(ctx,asText)
-
-//        TFRegisterModuleTaskImpl(reg).exec(ctx, registerModuleRequest)
-//
-//        val bundleId = UniqueId.randomUUID()
-//        val bundle = Fixtures.templateBundle(bundleId)
-//        val asText = TextAdapter().fromBundle(bundle)
-//        FBStoreTaskImpl(reg).exec(ctx, asText)
-//
-//        val registerBundleRequest = TFRegisterFileBundleRequest(moduleId, bundleId)
-//        TFRegisterFileBundleTaskImpl(reg).exec(ctx, registerBundleRequest)
-//
-
+        // 6. Do we have the expected output
+        val foobar = File("${location.serviceHomeDirectory("terraform", null)}/foo.bar")
+        assert(foobar.exists()) { "expected to find `foo.bar` file" }
+        assertThat(foobar.readText(), equalTo("Hello World!"))
     }
 }

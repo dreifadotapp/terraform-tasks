@@ -6,6 +6,10 @@ dependencies {
     implementation "com.github.dreifadotapp:tasks:$tasksVersion"
 
 
+    // temporary - remove one tasks updated with this dep
+    //compile "com.github.dreifadotapp:simple-serialisation:0.1.1"
+
+
     // Jackson for JSON and YAML
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
