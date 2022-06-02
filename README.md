@@ -17,6 +17,40 @@ _TODO - write some better docs and example_
 * [download](https://www.terraform.io/downloads) the Terraform CLI.
 * [custom CircleCI images](https://circleci.com/docs/2.0/custom-images).
 
+## Running from the command line
+
+```bash
+./gradlew :agent:run 
+```
+
+The agent is started on the default port of 11601. To test is running
+
+```bash
+curl http://localhost:11601/ping
+```
+
+
+## Running under Docker
+
+To build and push an image
+
+```bash
+./buildDocker.sh 
+./pushImage.sh
+```
+
+To run locally 
+
+```bash
+docker run -p11601:11601 terraform-tasks-agent -d
+```
+
+and test with 
+```bash
+curl http://localhost:11601/ping
+```
+
+
 ## Building with CircleCI
 
 This project needs a custom image with Terraform installed. This is in the `.circleci/images/primary` folder. There is a
