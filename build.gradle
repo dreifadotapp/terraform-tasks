@@ -44,6 +44,8 @@ clean.doFirst {
 subprojects {
     apply plugin: 'kotlin'
     apply plugin: 'maven'
+    apply plugin: 'application'
+
     //apply plugin: 'org.jetbrains.dokka'
 
     task sourcesJar(type: Jar, dependsOn: classes) {

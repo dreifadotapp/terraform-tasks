@@ -1,33 +1,44 @@
 dependencies {
     implementation project(":tasks")
-
     implementation("com.github.jitpack:gradle-simple:1.0")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
+    // pull in tasks
     implementation "com.github.dreifadotapp:tasks:$tasksVersion"
+
+    // pull in the tasks-http client and server
+    implementation "com.github.dreifadotapp.tasks-http4k:server:$tasksHttp4kVersion"
+    //implementation "com.github.dreifadotapp:tasks-http4k:0.0.1"
+
 
     implementation platform("org.http4k:http4k-bom:$http4kVersion")
     implementation("org.http4k:http4k-core")
     implementation("org.http4k:http4k-server-jetty")
 
-
-    // Jackson for JSON and YAML
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    // Jackson for JSON and YAML - should
+    //implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    //implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
 
     testImplementation("com.natpryce:hamkrest:$hamkrestVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation('org.junit.platform:junit-platform-runner:1.0.0')
-
-    //
-    implementation "com.github.dreifadotapp.tasks-http4k:server:$tasksHttp4kVersion"
-
     testImplementation "com.github.dreifadotapp.tasks-http4k:client:$tasksHttp4kVersion"
 
-
-    //implementation "com.github.dreifadotapp:tasks-http4k:0.0.1"
 
 
 }
 
+
+mainClassName = "dreifa.app.terraform.tasks.AgentKt"
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

@@ -13,10 +13,8 @@ class Config {
 
     fun port(): Int {
         val key = "$prefix.port".replace('.', '_')
-        val result = env.getOrDefault(key, "8081")
+        val result = env.getOrDefault(key, "11601")
         println("port is `$result`")
         return result.toInt()
     }
-
-
 }
